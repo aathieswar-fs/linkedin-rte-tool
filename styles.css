@@ -1,0 +1,77 @@
+:root{
+  --primary : #232325;
+  --secondary : #9A999C;
+  --secondary-2 : #444;
+  --primary-2 : white;
+}
+
+.linkedin-formatter-toolbox {
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    background-color: var(--primary);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .linkedin-formatter-toolbox button {
+    /* background-color: var(--primary-2); */
+    /* border: 1px solid var(--secondary); */
+    color: var(--secondary);
+    /* padding: 5px 10px; */
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 20px;
+    height: 36px;
+    width: 30px;
+  }
+  
+  .linkedin-formatter-toolbox button:hover {
+    background-color: var(--secondary);
+    color: var(--primary-2);
+  }
+
+  .linkedin-formatter-toolbox .selected {
+    background-color: var(--secondary);
+    color: var(--primary-2);
+  }
+
+  .welcome-icon-container {
+    position: relative;
+  }
+  .welcome-icon:hover {
+    opacity: 0.7;
+  }
+  .custom-tooltip {
+    visibility: hidden;
+    background-color: var(--secondary-2);
+    color: var(--primary-2);
+    text-align: left;
+    border-radius: 6px;
+    /* padding: 5px 10px; */
+    position: absolute;
+    z-index: 10;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    font-size:10px;
+    pointer-events: none;
+    width: 200px; /* Set a fixed width for the tooltip */
+    white-space: nowrap; /* Prevent text from wrapping */
+  }
+  .welcome-icon-container:hover .custom-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  .custom-tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%; /* Position the arrow at the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent var(--secondary-2) transparent;
+  }

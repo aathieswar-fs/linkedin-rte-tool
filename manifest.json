@@ -1,0 +1,27 @@
+{
+"update_url": "https://clients2.google.com/service/update2/crx",
+
+    "manifest_version": 3,
+    "name": "LinkedIn Text Formatter",
+    "version": "1.1",
+    "description": "A Chrome plugin to format LinkedIn posts with bold, italic, underline styles.",
+    "permissions": ["activeTab"],
+    "content_scripts": [
+      {
+        "matches": ["https://www.linkedin.com/*"],
+        "js": ["content.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "icons": {
+      "16": "icons/fleet-logo.png",
+      "48": "icons/fleet-logo.png",
+      "128": "icons/fleet-logo.png"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["icons/fleet-logo.png"],
+        "matches": ["https://www.linkedin.com/*"]
+      }
+    ]
+  }
