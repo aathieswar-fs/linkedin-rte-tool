@@ -89,11 +89,20 @@ function makeItalic(text) {
 }
 
 function makeUnderline(text) {
-  return text.split('').map(char => {
-    if (char === ' ' || char === '\t' || char === '\n') {
+  // return text.split('').map(char => {
+  //   if (char === ' ' || char === '\t' || char === '\n') {
+  //     return char;
+  //   }
+  //   return char + '\u0332';
+  // }).join('');
+  return text.split('').map((char, index) => {
+    if (char == ' ' || char === '\t' || char === '\n') {
       return char;
     }
-    return char + '\u0332';
+    if (text.length == 1) {
+      return char + '\u0332';
+    }
+    return char + '\u035F';
   }).join('');
 }
 
@@ -142,7 +151,9 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
- if (isAts && (!atsUrl.trim() || !atsIdentifier.trim() || !atsName.trim())) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+
+let debounceTimer;
+const optimizedAddToolbox = () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(addToolbox, 100);
+};
