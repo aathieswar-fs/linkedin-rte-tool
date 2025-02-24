@@ -109,11 +109,11 @@ function makeUnderline(text) {
 function addToolbox() {
   const modal = document.querySelector('.share-box-v2__modal');
   if (modal) {
-    const postArea = modal.querySelector('.ql-container');
+    const postArea = modal.querySelector('#share-to-linkedin-modal__header');
     if (postArea) {
       if (!document.getElementById('linkedin-formatter-toolbox')) {
         const toolbox = createToolbox();
-        postArea.parentNode.insertBefore(toolbox, postArea);
+        postArea.parentNode.appendChild(toolbox, postArea);
         // addPostAreaListener();
       } else {
         console.log("Toolbox already exists");
