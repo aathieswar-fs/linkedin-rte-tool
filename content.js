@@ -44,7 +44,7 @@ function applyFormatting(formatFunction, button) {
   const range = selection.getRangeAt(0);
   const selectedText = range.toString();
 
-  console.log("Selected text:", selectedText);
+  // console.log("Selected text:", selectedText.split('\n'));
 
   if (selectedText) {
     const newText = formatFunction(selectedText);
@@ -61,50 +61,160 @@ function applyFormatting(formatFunction, button) {
   }
 }
 
-function getStyledUnicode(style, text, uppercase, lowercase) {
-  return text.split('').map(char => {
-    if (char === ' ' || char === '\t' || char === '\n') {
+function isBold(codePoint) {
+  return (codePoint >= 0x1D400 && codePoint <= 0x1D419) ||
+    (codePoint >= 0x1D41A && codePoint <= 0x1D433);
+}
+
+function isItalic(codePoint) {
+  return (
+    (codePoint >= 0x1D434 && codePoint <= 0x1D44D) ||
+    (codePoint >= 0x1D44E && codePoint <= 0x1D467) ||
+    codePoint === 0x1D43B ||
+    codePoint === 0x210E
+  );
+}
+
+function isUnderlined(text) {
+  return text.includes('\u0332') || text.includes('\u035F');
+}
+
+function makeBold(text) {
+  let hasBold = false;
+
+  // Check if text is already bold
+  for (const char of text) {
+    const codePoint = char.codePointAt(0);
+    if (isBold(codePoint)) {
+      hasBold = true;
+    } else if (isItalic(codePoint) || isUnderlined(char)) {
+      alert("Cannot apply bold: Text is already styled.");
+      return text;
+    }
+  }
+
+  // If already bold, remove bold
+  if (hasBold) {
+    return [...text].map(char => {
+      const codePoint = char.codePointAt(0);
+
+      if (codePoint >= 0x1D400 && codePoint <= 0x1D419) {
+        return String.fromCodePoint(codePoint - (0x1D400 - 0x41));
+      }
+
+      if (codePoint >= 0x1D41A && codePoint <= 0x1D433) {
+        return String.fromCodePoint(codePoint - (0x1D41A - 0x61));
+      }
+
       return char;
+    }).join('');
+  }
+
+  // Otherwise, apply bold
+  return [...text].map(char => {
+    const codePoint = char.codePointAt(0);
+
+    if (codePoint >= 0x41 && codePoint <= 0x5A) {
+      return String.fromCodePoint(codePoint + (0x1D400 - 0x41));
     }
 
-    if (style === 'italics' && char === 'h') {
-      return String.fromCodePoint(0x1D629);
+    if (codePoint >= 0x61 && codePoint <= 0x7A) {
+      return String.fromCodePoint(codePoint + (0x1D41A - 0x61));
     }
 
-    const code = char.charCodeAt(0);
-    if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
-      let offset = (code >= 65 && code <= 90) ? uppercase : lowercase;
-      return String.fromCodePoint(code + offset);
-    }
     return char;
   }).join('');
 }
 
-function makeBold(text) {
-  return getStyledUnicode('bold', text, 0x1D400 - 0x41, 0x1D41A - 0x61);
-}
-
 function makeItalic(text) {
-  return getStyledUnicode('italics', text, 0x1D434 - 0x41, 0x1D44E - 0x61);
+  let hasItalic = false;
+
+  // Check if text is already italic
+  for (const char of text) {
+    const codePoint = char.codePointAt(0);
+    if (isItalic(codePoint)) {
+      hasItalic = true;
+    } else if (isBold(codePoint) || isUnderlined(char)) {
+      alert("Cannot apply italics: Text is already styled.");
+      return text;
+    }
+  }
+
+  // If already italic, remove italics
+  if (hasItalic) {
+    return [...text].map(char => {
+      const codePoint = char.codePointAt(0);
+
+      if (codePoint === 0x210E) {
+        return 'h';
+      }
+
+      if (codePoint === 0x1D43B) {
+        return 'H';
+      }
+
+      if (codePoint >= 0x1D434 && codePoint <= 0x1D44D) {
+        return String.fromCodePoint(codePoint - (0x1D434 - 0x41));
+      }
+
+      if (codePoint >= 0x1D44E && codePoint <= 0x1D467) {
+        return String.fromCodePoint(codePoint - (0x1D44E - 0x61));
+      }
+
+      return char;
+    }).join('');
+  }
+
+  // Otherwise, apply italics
+  return [...text].map(char => {
+    const codePoint = char.codePointAt(0);
+
+    if (codePoint === 0x0048) {
+      return String.fromCodePoint(0x1D43B);
+    }
+
+    if (codePoint === 0x0068) {
+      return String.fromCodePoint(0x210E);
+    }
+
+    if (codePoint >= 0x41 && codePoint <= 0x5A) {
+      return String.fromCodePoint(codePoint + (0x1D434 - 0x41));
+    }
+
+    if (codePoint >= 0x61 && codePoint <= 0x7A) {
+      return String.fromCodePoint(codePoint + (0x1D44E - 0x61));
+    }
+
+    return char;
+  }).join('');
 }
 
 function makeUnderline(text) {
-  // return text.split('').map(char => {
-  //   if (char === ' ' || char === '\t' || char === '\n') {
-  //     return char;
-  //   }
-  //   return char + '\u0332';
-  // }).join('');
-  return text.split('').map((char, index) => {
+  let hasUnderline = isUnderlined(text);
+
+  // If already underlined, remove underline
+  if (hasUnderline) {
+    return text.replace(/([\u0332\u035F])/g, '');
+  }
+
+  // Check for other styles
+  for (const char of text) {
+    const codePoint = char.codePointAt(0);
+    if (isBold(codePoint) || isItalic(codePoint)) {
+      alert("Cannot apply underline: Text is already styled.");
+      return text;
+    }
+  }
+
+  // Otherwise, apply underline
+  return text.split('').map(char => {
     if (char == ' ' || char === '\t' || char === '\n') {
       return char;
-    }
-    if (text.length == 1) {
-      return char + '\u0332';
     }
     return char + '\u035F';
   }).join('');
 }
+
 
 function addToolbox() {
   const modal = document.querySelector('.share-box-v2__modal');
